@@ -2,7 +2,7 @@
 
 namespace Books.Application.Repositories
 {
-    internal interface IBookRepository
+    public interface IBookRepository
     {
         Task<Book?> GetByIdAsync(Guid id, CancellationToken cancellationToken);
     }
