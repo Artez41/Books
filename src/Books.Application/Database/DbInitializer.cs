@@ -22,8 +22,8 @@ namespace Books.Application.Database
                 title TEXT not null,
                 author TEXT not null,
                 description TEXT not null,
-                yearofrelease INTEGER not null,
-                numberofpages INTEGER not null
+                yearofrelease integer not null,
+                numberofpages integer not null);
             """);
 
             await connection.ExecuteAsync("""
@@ -35,7 +35,7 @@ namespace Books.Application.Database
             await connection.ExecuteAsync("""
                 create table if not exists genres (
                 bookId UUID references books (Id),
-                name TEXT not null
+                name TEXT not null);
             """);
         }
     }
