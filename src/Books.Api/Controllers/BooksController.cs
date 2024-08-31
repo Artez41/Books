@@ -14,9 +14,11 @@ namespace Books.Api.Controllers
         }
 
         [HttpGet(ApiEndpoints.Books.Get)]
-        public async Task<IActionResult> Get([FromRoute] Guid id, CancellationToken token)
+        public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
         {
-            var book = await _bookService.GetByIdAsync(id, token);
+            var book = Guid.TryParse(idOrSlug, out var id)
+                ? await _bookService.GetByIdAsync(id, token)
+                : await _bookService.GetBySlugAsync(idOrSlug, token);
 
             if (book is null)
                 return NotFound();

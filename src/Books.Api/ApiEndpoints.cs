@@ -8,7 +8,7 @@
         {
             private const string Base = $"{ApiBase}/books";
 
-            public const string Get = $"{Base}/{{id}}";
+            public const string Get = $"{Base}/{{idOrSlug}}";
         }
     }
 }

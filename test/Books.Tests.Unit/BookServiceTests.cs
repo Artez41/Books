@@ -25,7 +25,6 @@ namespace Books.Application.Tests.Unit
             {
                 Id = Guid.NewGuid(),
                 Title = "Lord of the rings",
-                Slug = "slug",
                 Author = "J.R.R Tolkien",
                 Description = "Very interesting book",
                 YearOfRelease = 1923,
@@ -52,6 +51,45 @@ namespace Books.Application.Tests.Unit
 
             // Act
             var result = await _sut.GetByIdAsync(Guid.NewGuid());
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task GetBySlugAsync_ShouldReturnBook_WhenBookExists()
+        {
+            // Arrange
+            var book = new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "Lord of the rings",
+                Author = "J.R.R Tolkien",
+                Description = "Very interesting book",
+                YearOfRelease = 1923,
+                NumberOfPages = 782,
+                Genres = ["adventure"]
+            };
+
+            CancellationToken cancellationToken = CancellationToken.None;
+            _bookRepository.GetBySlugAsync(book.Slug, cancellationToken).Returns(book);
+
+            // Act
+            var result = await _sut.GetBySlugAsync(book.Slug);
+
+            // Assert
+            result.Should().BeEquivalentTo(book);
+        }
+
+        [Fact]
+        public async Task GetBySlugAsync_ShouldReturnNull_WhenBookNotExist()
+        {
+            // Arrange
+            CancellationToken cancellationToken = CancellationToken.None;
+            _bookRepository.GetBySlugAsync(Arg.Any<string>(), cancellationToken).ReturnsNull();
+
+            // Act
+            var result = await _sut.GetBySlugAsync(Arg.Any<string>());
 
             // Assert
             result.Should().BeNull();
