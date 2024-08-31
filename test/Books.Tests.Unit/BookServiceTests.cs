@@ -25,7 +25,6 @@ namespace Books.Application.Tests.Unit
             {
                 Id = Guid.NewGuid(),
                 Title = "Lord of the rings",
-                Slug = "slug",
                 Author = "J.R.R Tolkien",
                 Description = "Very interesting book",
                 YearOfRelease = 1923,

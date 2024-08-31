@@ -29,5 +29,22 @@ namespace Books.Application.Repositories
 
             return book;
         }
+
+        public async Task<Book?> GetBySlugAsync(string slug, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+
+            var book = await connection.QueryFirstOrDefaultAsync<Book>(
+                new CommandDefinition("""
+                    select *
+                    from books
+                    where slug = @slug
+                """, new { slug }, cancellationToken: token));
+
+            if (book is null) 
+                return null;
+
+            return book;
+        }
     }
 }

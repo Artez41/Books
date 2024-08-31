@@ -16,5 +16,10 @@ namespace Books.Application.Services
         {
             return _bookRepository.GetByIdAsync(id, token);
         }
+
+        public Task<Book?> GetBySlugAsync(string slug, CancellationToken token = default)
+        {
+            return _bookRepository.GetBySlugAsync(slug, token);
+        }
     }
 }

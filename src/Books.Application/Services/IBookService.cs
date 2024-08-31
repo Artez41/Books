@@ -5,5 +5,6 @@ namespace Books.Application.Services
     public interface IBookService
     {
         Task<Book?> GetByIdAsync(Guid id, CancellationToken token = default);
+        Task<Book?> GetBySlugAsync(string slug, CancellationToken token = default);
     }
 }
