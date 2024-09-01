@@ -32,8 +32,7 @@ namespace Books.Application.Tests.Unit
                 Genres = ["adventure"]
             };
 
-            CancellationToken cancellationToken = CancellationToken.None;
-            _bookRepository.GetByIdAsync(book.Id, cancellationToken).Returns(book);
+            _bookRepository.GetByIdAsync(book.Id).Returns(book);
 
             // Act
             var result = await _sut.GetByIdAsync(book.Id);
@@ -46,8 +45,7 @@ namespace Books.Application.Tests.Unit
         public async Task GetByIdAsync_ShouldReturnNull_WhenBookNotExists()
         {
             // Arrange
-            CancellationToken cancellationToken = CancellationToken.None;
-            _bookRepository.GetByIdAsync(Arg.Any<Guid>(), cancellationToken).ReturnsNull();
+            _bookRepository.GetByIdAsync(Arg.Any<Guid>()).ReturnsNull();
 
             // Act
             var result = await _sut.GetByIdAsync(Guid.NewGuid());
@@ -71,8 +69,7 @@ namespace Books.Application.Tests.Unit
                 Genres = ["adventure"]
             };
 
-            CancellationToken cancellationToken = CancellationToken.None;
-            _bookRepository.GetBySlugAsync(book.Slug, cancellationToken).Returns(book);
+            _bookRepository.GetBySlugAsync(book.Slug).Returns(book);
 
             // Act
             var result = await _sut.GetBySlugAsync(book.Slug);
@@ -85,14 +82,37 @@ namespace Books.Application.Tests.Unit
         public async Task GetBySlugAsync_ShouldReturnNull_WhenBookNotExist()
         {
             // Arrange
-            CancellationToken cancellationToken = CancellationToken.None;
-            _bookRepository.GetBySlugAsync(Arg.Any<string>(), cancellationToken).ReturnsNull();
+            _bookRepository.GetBySlugAsync(Arg.Any<string>()).ReturnsNull();
 
             // Act
             var result = await _sut.GetBySlugAsync(Arg.Any<string>());
 
             // Assert
             result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task CreateAsync_ShouldCreateBook_WhenBookCreated()
+        {
+            // Arrange
+            var book = new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "Lord of the rings",
+                Author = "J.R.R Tolkien",
+                Description = "Very interesting book",
+                YearOfRelease = 1923,
+                NumberOfPages = 782,
+                Genres = ["adventure"]
+            };
+
+            _bookRepository.CreateAsync(book).Returns(true);
+
+            // Act
+            var result = await _sut.CreateAsync(book);
+
+            // Assert
+            result.Should().BeTrue();
         }
     }
 }

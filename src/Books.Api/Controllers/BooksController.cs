@@ -1,4 +1,6 @@
-﻿using Books.Application.Services;
+﻿using Books.Api.Mapping;
+using Books.Application.Services;
+using Books.Contracts.Requests;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Books.Api.Controllers
@@ -24,6 +26,15 @@ namespace Books.Api.Controllers
                 return NotFound();
 
             return Ok(book);
+        }
+
+        [HttpPost(ApiEndpoints.Books.Create)]
+        public async Task<IActionResult> Create([FromBody] CreateBookRequest request, CancellationToken token)
+        {
+            var book = request.MapToBook();
+            await _bookService.CreateAsync(book, token);
+
+            return CreatedAtAction(nameof(Get), new { idOrSlug =  book.Id }, book);
         }
     }
 }

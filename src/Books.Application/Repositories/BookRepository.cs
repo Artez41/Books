@@ -13,6 +13,32 @@ namespace Books.Application.Repositories
             _dbConnectionFactory = dbConnectionFactory;
         }
 
+        public async Task<bool> CreateAsync(Book book, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+            using var transaction = connection.BeginTransaction();
+
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                insert into books (id, slug, title, author, description, yearofrelease, numberofpages)
+                values (@Id, @Slug, @Title, @Author, @Description, @YearOfRelease, @NumberOfPages)
+                """, book, cancellationToken: token));
+
+            if (result > 0)
+            {
+                foreach (var genre in book.Genres)
+                {
+                    await connection.ExecuteAsync(new CommandDefinition("""
+                        insert into genres (bookId, name)
+                        values (@BookId, @Name)
+                    """, new { BookId = book.Id, Name = genre }, cancellationToken: token));
+                }
+            }
+
+            transaction.Commit();
+
+            return result > 0;
+        }
+
         public async Task<Book?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
