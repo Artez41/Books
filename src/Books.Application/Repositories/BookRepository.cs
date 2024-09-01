@@ -19,7 +19,7 @@ namespace Books.Application.Repositories
             using var transaction = connection.BeginTransaction();
 
             var result = await connection.ExecuteAsync(new CommandDefinition("""
-                insert int books (id, slug, title, author, description, yearofrelease, numberofpages)
+                insert into books (id, slug, title, author, description, yearofrelease, numberofpages)
                 values (@Id, @Slug, @Title, @Author, @Description, @YearOfRelease, @NumberOfPages)
                 """, book, cancellationToken: token));
 
