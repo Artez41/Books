@@ -90,5 +90,29 @@ namespace Books.Application.Tests.Unit
             // Assert
             result.Should().BeNull();
         }
+
+        [Fact]
+        public async Task CreateAsync_ShouldCreateBook_WhenBookCreated()
+        {
+            // Arrange
+            var book = new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "Lord of the rings",
+                Author = "J.R.R Tolkien",
+                Description = "Very interesting book",
+                YearOfRelease = 1923,
+                NumberOfPages = 782,
+                Genres = ["adventure"]
+            };
+
+            _bookRepository.CreateAsync(book).Returns(true);
+
+            // Act
+            var result = await _sut.CreateAsync(book);
+
+            // Assert
+            result.Should().BeTrue();
+        }
     }
 }
