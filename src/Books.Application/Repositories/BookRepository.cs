@@ -44,9 +44,12 @@ namespace Books.Application.Repositories
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
             var result = await connection.QueryAsync(new CommandDefinition("""
-                select *
+                select 
+                    b.*,
+                    string_agg(distinct g.name, ',') as genres
                 from books b
                     left join genres g on b.id = g.bookId
+                group by id
                 """, cancellationToken: token));
 
             return result.Select(x => new Book
@@ -55,8 +58,8 @@ namespace Books.Application.Repositories
                 Title = x.title,
                 Author = x.author,
                 Description = x.description,
-                YearOfRelease = x.yearOfRelease,
-                NumberOfPages = x.numberOfPages,
+                YearOfRelease = x.yearofrelease,
+                NumberOfPages = x.numberofpages,
                 Genres = Enumerable.ToList(x.genres.Split(','))
             });
         }
