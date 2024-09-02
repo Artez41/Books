@@ -9,6 +9,7 @@
             private const string Base = $"{ApiBase}/books";
 
             public const string Create = Base;
+            public const string GetAll = Base;
             public const string Get = $"{Base}/{{idOrSlug}}";
         }
     }

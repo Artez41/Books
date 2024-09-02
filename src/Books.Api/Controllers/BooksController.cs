@@ -15,6 +15,15 @@ namespace Books.Api.Controllers
             _bookService = bookService;
         }
 
+        [HttpGet(ApiEndpoints.Books.GetAll)]
+        public async Task<IActionResult> GetAll(CancellationToken token)
+        {
+            var books = await _bookService.GetAllAsync(token);
+            var booksResponse = books.MapToResponse();
+
+            return Ok(booksResponse);
+        }
+
         [HttpGet(ApiEndpoints.Books.Get)]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
         {

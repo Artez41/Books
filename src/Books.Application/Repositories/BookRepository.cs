@@ -39,6 +39,31 @@ namespace Books.Application.Repositories
             return result > 0;
         }
 
+        public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+
+            var result = await connection.QueryAsync(new CommandDefinition("""
+                select 
+                    b.*,
+                    string_agg(distinct g.name, ',') as genres
+                from books b
+                    left join genres g on b.id = g.bookId
+                group by id
+                """, cancellationToken: token));
+
+            return result.Select(x => new Book
+            {
+                Id = x.id,
+                Title = x.title,
+                Author = x.author,
+                Description = x.description,
+                YearOfRelease = x.yearofrelease,
+                NumberOfPages = x.numberofpages,
+                Genres = Enumerable.ToList(x.genres.Split(','))
+            });
+        }
+
         public async Task<Book?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);

@@ -114,5 +114,48 @@ namespace Books.Application.Tests.Unit
             // Assert
             result.Should().BeTrue();
         }
+
+        [Fact]
+        public async Task GetAllAsync_ShouldReturnBooks_WhenBooksExist()
+        {
+            // Arrange
+            var book = new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "Lord of the rings",
+                Author = "J.R.R Tolkien",
+                Description = "Very interesting book",
+                YearOfRelease = 1923,
+                NumberOfPages = 782,
+                Genres = ["adventure"]
+            };
+
+            var books = new[]
+            {
+                book
+            };
+
+            _bookRepository.GetAllAsync().Returns(books);
+
+            // Act
+            var result = await _sut.GetAllAsync();
+
+            // Assert
+            result.Single().Should().BeEquivalentTo(book);
+            result.Should().BeEquivalentTo(books);
+        }
+
+        [Fact]
+        public async Task GetAllAsync_ShouldReturnRmptyList_WhenNoBooksExist()
+        {
+            // Arrange
+            _bookRepository.GetAllAsync().Returns(Enumerable.Empty<Book>());
+
+            // Act
+            var result = await _sut.GetAllAsync();
+
+            // Assert
+            result.Should().BeEmpty();
+        }
     }
 }

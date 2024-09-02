@@ -17,6 +17,11 @@ namespace Books.Application.Services
             return _bookRepository.CreateAsync(book, token);
         }
 
+        public Task<IEnumerable<Book>> GetAllAsync(CancellationToken token = default)
+        {
+            return _bookRepository.GetAllAsync(token);
+        }
+
         public Task<Book?> GetByIdAsync(Guid id, CancellationToken token = default)
         {
             return _bookRepository.GetByIdAsync(id, token);
