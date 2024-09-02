@@ -33,5 +33,13 @@ namespace Books.Api.Mapping
                 Genres = book.Genres.ToList()
             };
         }
+
+        public static BooksResponse MapToResponse(this IEnumerable<Book> books)
+        {
+            return new BooksResponse
+            {
+                Items = books.Select(MapToResponse)
+            };
+        }
     }
 }
