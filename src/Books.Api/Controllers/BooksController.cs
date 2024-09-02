@@ -25,7 +25,7 @@ namespace Books.Api.Controllers
             if (book is null)
                 return NotFound();
 
-            return Ok(book);
+            return Ok(book.MapToResponse());
         }
 
         [HttpPost(ApiEndpoints.Books.Create)]

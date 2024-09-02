@@ -1,5 +1,6 @@
 ﻿using Books.Application.Models;
 using Books.Contracts.Requests;
+using Books.Contracts.Responses;
 
 namespace Books.Api.Mapping
 {
@@ -16,6 +17,20 @@ namespace Books.Api.Mapping
                 YearOfRelease = request.YearOfRelease,
                 NumberOfPages = request.NumberOfPages,
                 Genres = request.Genres.ToList()
+            };
+        }
+
+        public static BookResponse MapToResponse(this Book book)
+        {
+            return new BookResponse
+            {
+                Id = book.Id,
+                Title = book.Title,
+                Author = book.Author,
+                Description = book.Description,
+                YearOfRelease = book.YearOfRelease,
+                NumberOfPages = book.NumberOfPages,
+                Genres = book.Genres.ToList()
             };
         }
     }
