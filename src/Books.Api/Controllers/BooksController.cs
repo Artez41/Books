@@ -45,5 +45,17 @@ namespace Books.Api.Controllers
 
             return CreatedAtAction(nameof(Get), new { idOrSlug =  book.Id }, book);
         }
+
+        [HttpPut(ApiEndpoints.Books.Update)]
+        public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateBookRequest request, CancellationToken token)
+        {
+            var book = request.MapToBook(id);
+            var isUpdated = await _bookService.UpdateAsync(book, token);
+
+            if (!isUpdated)
+                return NotFound();
+
+            return Ok(book.MapToResponse());
+        }
     }
 }
