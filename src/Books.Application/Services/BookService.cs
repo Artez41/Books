@@ -31,5 +31,10 @@ namespace Books.Application.Services
         {
             return _bookRepository.GetBySlugAsync(slug, token);
         }
+
+        public Task<bool> UpdateAsync(Book book, CancellationToken token = default)
+        {
+            return _bookRepository.UpdateAsync(book, token);
+        }
     }
 }
