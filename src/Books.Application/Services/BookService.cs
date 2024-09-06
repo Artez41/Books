@@ -39,7 +39,10 @@ namespace Books.Application.Services
             if (!isBookExists)
                 return null;
 
-            await _bookRepository.UpdateAsync(book, token);
+            bool isUpdated = await _bookRepository.UpdateAsync(book, token);
+
+            if (!isUpdated) 
+                return null;
 
             return book;
         }
