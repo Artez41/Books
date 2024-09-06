@@ -32,9 +32,14 @@ namespace Books.Application.Services
             return _bookRepository.GetBySlugAsync(slug, token);
         }
 
-        public Task<bool> UpdateAsync(Book book, CancellationToken token = default)
+        public async Task<Book?> UpdateAsync(Book book, CancellationToken token = default)
         {
-            return _bookRepository.UpdateAsync(book, token);
+            bool isBookExists = await _bookRepository.ExistsByIdAsync(book.Id, token);
+
+            if (!isBookExists)
+                return null;
+
+            return book;
         }
     }
 }
