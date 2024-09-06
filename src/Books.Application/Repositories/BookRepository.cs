@@ -39,7 +39,7 @@ namespace Books.Application.Repositories
             return result > 0;
         }
 
-        public async Task<bool> DeleteAsync(Guid id, CancellationToken token = default)
+        public async Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             using var transaction = connection.BeginTransaction();
