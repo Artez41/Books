@@ -39,6 +39,8 @@ namespace Books.Application.Services
             if (!isBookExists)
                 return null;
 
+            await _bookRepository.UpdateAsync(book, token);
+
             return book;
         }
     }
