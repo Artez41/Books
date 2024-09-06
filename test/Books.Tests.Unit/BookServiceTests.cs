@@ -146,7 +146,7 @@ namespace Books.Application.Tests.Unit
         }
 
         [Fact]
-        public async Task GetAllAsync_ShouldReturnRmptyList_WhenNoBooksExist()
+        public async Task GetAllAsync_ShouldReturnEmptyList_WhenNoBooksExist()
         {
             // Arrange
             _bookRepository.GetAllAsync().Returns(Enumerable.Empty<Book>());
@@ -156,6 +156,81 @@ namespace Books.Application.Tests.Unit
 
             // Assert
             result.Should().BeEmpty();
+        }
+
+        [Fact]
+        public async Task UpdateAsync_ShouldReturnNull_WhenBookNotExist()
+        {
+            // Arrange
+            var updatedBook = new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "Crime and Punishment",
+                Author = "Fyodor Dostoevsky",
+                Description = "Phylosofy book",
+                YearOfRelease = 1866,
+                NumberOfPages = 527,
+                Genres = ["adventure"]
+            };
+
+            _bookRepository.ExistsByIdAsync(updatedBook.Id).Returns(false);
+
+            // Act
+            var result = await _sut.UpdateAsync(updatedBook);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task UpdateAsync_ShouldReturnNull_WhenBookNotUpdated()
+        {
+            // Arrange
+            var updatedBook = new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "Crime and Punishment",
+                Author = "Fyodor Dostoevsky",
+                Description = "Phylosofy book",
+                YearOfRelease = 1866,
+                NumberOfPages = 527,
+                Genres = ["adventure"]
+            };
+
+            _bookRepository.ExistsByIdAsync(updatedBook.Id).Returns(true);
+            _bookRepository.UpdateAsync(updatedBook).Returns(false);
+
+            // Act
+            var result = await _sut.UpdateAsync(updatedBook);
+
+            // Assert
+            result.Should().BeNull();
+        }
+
+        [Fact]
+        public async Task UpdateAsync_ShouldReturnBook_WhenBookUpdated()
+        {
+            // Arrange
+            var updatedBook = new Book
+            {
+                Id = Guid.NewGuid(),
+                Title = "Crime and Punishment",
+                Author = "Fyodor Dostoevsky",
+                Description = "Phylosofy book",
+                YearOfRelease = 1866,
+                NumberOfPages = 527,
+                Genres = ["adventure"]
+            };
+
+            _bookRepository.ExistsByIdAsync(updatedBook.Id).Returns(true);
+            _bookRepository.UpdateAsync(updatedBook).Returns(true);
+
+            // Act
+            var result = await _sut.UpdateAsync(updatedBook);
+
+            // Assert
+            result.Should().NotBeNull();
+            result.Should().BeEquivalentTo(updatedBook);
         }
     }
 }
