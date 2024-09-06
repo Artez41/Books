@@ -39,6 +39,15 @@ namespace Books.Application.Repositories
             return result > 0;
         }
 
+        public async Task<bool> ExistsByIdAsync(Guid id, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+
+            return await connection.ExecuteScalarAsync<bool>(new CommandDefinition("""
+                select count(1) from books where id = @id
+                """, new { id }, cancellationToken: token));
+        }
+
         public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
@@ -96,6 +105,33 @@ namespace Books.Application.Repositories
                 return null;
 
             return book;
+        }
+
+        public async Task<bool> UpdateAsync(Book book, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+            using var transaction = connection.BeginTransaction();
+
+            await connection.ExecuteAsync(new CommandDefinition("""
+                delete from genres where bookid = @id
+                """, new { book.Id }, cancellationToken: token));
+
+            foreach (var genre in book.Genres)
+            {
+                await connection.ExecuteAsync(new CommandDefinition("""
+                    insert into genres (bookid, name)
+                    values (@BookId, @Name)
+                    """, new { BookId = book.Id, Name = genre }, cancellationToken: token));
+            }
+
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                update books 
+                set slug = @Slug, title = @Title, author = @Author, description = @Description, yearofrelease = @YearOfRelease, numberofpages = @NumberOfPages
+                where id = @Id
+                """, book, cancellationToken: token));
+
+            transaction.Commit();
+            return result > 0;
         }
     }
 }

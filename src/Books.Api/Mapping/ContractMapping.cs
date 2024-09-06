@@ -20,6 +20,20 @@ namespace Books.Api.Mapping
             };
         }
 
+        public static Book MapToBook(this UpdateBookRequest request, Guid id)
+        {
+            return new Book
+            {
+                Id = id,
+                Title = request.Title,
+                Author = request.Author,
+                Description = request.Description,
+                YearOfRelease = request.YearOfRelease,
+                NumberOfPages = request.NumberOfPages,
+                Genres = request.Genres.ToList()
+            };
+        }
+
         public static BookResponse MapToResponse(this Book book)
         {
             return new BookResponse
