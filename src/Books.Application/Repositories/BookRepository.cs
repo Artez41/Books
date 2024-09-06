@@ -39,6 +39,15 @@ namespace Books.Application.Repositories
             return result > 0;
         }
 
+        public async Task<bool> ExistsByIdAsync(Guid id, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+
+            return await connection.ExecuteScalarAsync<bool>(new CommandDefinition("""
+                select count(1) from books where id = @id
+                """, new { id }, cancellationToken: token));
+        }
+
         public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
