@@ -232,5 +232,33 @@ namespace Books.Application.Tests.Unit
             result.Should().NotBeNull();
             result.Should().BeEquivalentTo(updatedBook);
         }
+
+        [Fact]
+        public async Task DeleteByIdAsync_ShouldDeleteBook_WhenBookExists()
+        {
+            // Arrange
+            var bookId = Guid.NewGuid();
+            _bookRepository.DeleteByIdAsync(bookId).Returns(true);
+
+            // Act
+            var result = await _sut.DeleteByIdAsync(bookId);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task DeleteByIdAsync_ShouldNotDeleteBook_WhenBookNotExist()
+        {
+            // Arrange
+            var bookId = Guid.NewGuid();
+            _bookRepository.DeleteByIdAsync(bookId).Returns(false);
+
+            // Act
+            var result = await _sut.DeleteByIdAsync(bookId);
+
+            // Assert
+            result.Should().BeFalse();
+        }
     }
 }

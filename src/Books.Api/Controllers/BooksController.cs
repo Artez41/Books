@@ -57,5 +57,16 @@ namespace Books.Api.Controllers
 
             return Ok(book.MapToResponse());
         }
+
+        [HttpDelete(ApiEndpoints.Books.Delete)]
+        public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
+        {
+            var deleted = await _bookService.DeleteByIdAsync(id, token);
+
+            if (!deleted)
+                return NotFound();
+
+            return Ok();
+        }
     }
 }
