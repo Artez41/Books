@@ -1,4 +1,5 @@
 ﻿using Books.Application.Database;
+using Books.Application.Logging;
 using Books.Application.Repositories;
 using Books.Application.Services;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,6 +12,7 @@ namespace Books.Application
         {
             services.AddSingleton<IBookRepository, BookRepository>();
             services.AddSingleton<IBookService, BookService>();
+            services.AddTransient(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
             return services;
         }
 
