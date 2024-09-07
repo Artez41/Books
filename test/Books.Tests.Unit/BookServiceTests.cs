@@ -1,7 +1,9 @@
 ﻿using Books.Application.Models;
 using Books.Application.Repositories;
 using Books.Application.Services;
+using Castle.Core.Logging;
 using FluentAssertions;
+using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NSubstitute.ReturnsExtensions;
 
@@ -11,10 +13,11 @@ namespace Books.Application.Tests.Unit
     {
         private readonly BookService _sut;
         private readonly IBookRepository _bookRepository = Substitute.For<IBookRepository>();
+        private readonly ILogger<BookService> _logger = Substitute.For<ILogger<BookService>>();
 
         public BookServiceTests()
         {
-            _sut = new BookService(_bookRepository);
+            _sut = new BookService(_bookRepository, _logger);
         }
 
         [Fact]
