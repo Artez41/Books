@@ -1,6 +1,6 @@
-﻿using Books.Application.Models;
+﻿using Books.Application.Logging;
+using Books.Application.Models;
 using Books.Application.Repositories;
-using Microsoft.Extensions.Logging;
 using System.Diagnostics;
 
 namespace Books.Application.Services
@@ -8,9 +8,9 @@ namespace Books.Application.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
-        private readonly ILogger<BookService> _logger;
+        private readonly ILoggerAdapter<BookService> _logger;
 
-        public BookService(IBookRepository bookRepository, ILogger<BookService> logger)
+        public BookService(IBookRepository bookRepository, ILoggerAdapter<BookService> logger)
         {
             _bookRepository = bookRepository;
             _logger = logger;
