@@ -48,11 +48,15 @@ namespace Books.Api.Mapping
             };
         }
 
-        public static BooksResponse MapToResponse(this IEnumerable<Book> books)
+        public static BooksResponse MapToResponse(this IEnumerable<Book> books, int page,
+            int pageSize, int totalCount)
         {
             return new BooksResponse
             {
-                Items = books.Select(MapToResponse)
+                Items = books.Select(MapToResponse),
+                Page = page,
+                PageSize = pageSize,
+                Total = totalCount
             };
         }
     }

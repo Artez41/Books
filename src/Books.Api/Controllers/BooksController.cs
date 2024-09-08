@@ -19,7 +19,7 @@ namespace Books.Api.Controllers
         public async Task<IActionResult> GetAll(CancellationToken token)
         {
             var books = await _bookService.GetAllAsync(token);
-            var booksResponse = books.MapToResponse();
+            var booksResponse = books.MapToResponse(1, 1, 15);
 
             return Ok(booksResponse);
         }
