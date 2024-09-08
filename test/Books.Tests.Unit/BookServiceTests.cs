@@ -3,6 +3,7 @@ using Books.Application.Models;
 using Books.Application.Repositories;
 using Books.Application.Services;
 using FluentAssertions;
+using FluentValidation;
 using Microsoft.Data.Sqlite;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -14,11 +15,12 @@ namespace Books.Application.Tests.Unit
     {
         private readonly BookService _sut;
         private readonly IBookRepository _bookRepository = Substitute.For<IBookRepository>();
+        private readonly IValidator<Book> _validator;
         private readonly ILoggerAdapter<BookService> _logger = Substitute.For<ILoggerAdapter<BookService>>();
 
         public BookServiceTests()
         {
-            _sut = new BookService(_bookRepository, _logger);
+            _sut = new BookService(_bookRepository, _logger, _validator);
         }
 
         [Fact]
