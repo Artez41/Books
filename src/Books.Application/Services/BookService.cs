@@ -1,6 +1,7 @@
 ﻿using Books.Application.Logging;
 using Books.Application.Models;
 using Books.Application.Repositories;
+using FluentValidation;
 using System.Diagnostics;
 
 namespace Books.Application.Services
@@ -8,11 +9,13 @@ namespace Books.Application.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IValidator<Book> _bookValidator;
         private readonly ILoggerAdapter<BookService> _logger;
 
-        public BookService(IBookRepository bookRepository, ILoggerAdapter<BookService> logger)
+        public BookService(IBookRepository bookRepository, ILoggerAdapter<BookService> logger, IValidator<Book> bookValidator)
         {
             _bookRepository = bookRepository;
+            _bookValidator = bookValidator;
             _logger = logger;
         }
 
@@ -20,6 +23,8 @@ namespace Books.Application.Services
         {
             _logger.LogInformation("Creating book with id {0} and title: {1}", book.Id, book.Title);
             var stopWatch = Stopwatch.StartNew();
+
+            await _bookValidator.ValidateAndThrowAsync(book, token);
 
             try
             {
@@ -125,6 +130,8 @@ namespace Books.Application.Services
         {
             _logger.LogInformation("Update book with id: {0}", book.Id);
             var stopWatch = Stopwatch.StartNew();
+
+            await _bookValidator.ValidateAndThrowAsync(book, token);
 
             try
             {
