@@ -76,7 +76,14 @@ namespace Books.Application.Repositories
                 from books b
                     left join genres g on b.id = g.bookId
                 group by id
-                """, cancellationToken: token));
+                limit @pageSize
+                offset @pageOffset
+                """, new
+                    {
+                       pageSize = options.PageSize,
+                       pageOffset = (options.Page - 1) * options.PageSize
+                    }, 
+                    cancellationToken: token));
 
             return result.Select(x => new Book
             {
