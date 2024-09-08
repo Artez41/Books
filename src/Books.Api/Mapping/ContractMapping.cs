@@ -59,5 +59,14 @@ namespace Books.Api.Mapping
                 Total = totalCount
             };
         }
+
+        public static GetAllBooksOptions MapToOptions(this GetAllBooksRequest request)
+        {
+            return new GetAllBooksOptions
+            {
+                Page = request.Page,
+                PageSize = request.PageSize
+            };
+        }
     }
 }

@@ -65,7 +65,7 @@ namespace Books.Application.Repositories
                 """, new { id }, cancellationToken: token));
         }
 
-        public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Book>> GetAllAsync(GetAllBooksOptions options, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 

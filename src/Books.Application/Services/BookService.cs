@@ -63,7 +63,7 @@ namespace Books.Application.Services
             }        
         }
 
-        public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Book>> GetAllAsync(GetAllBooksOptions options, CancellationToken token = default)
         {
             _logger.LogInformation("Retrieving all books");
             var stopWatch = Stopwatch.StartNew();
