@@ -17,9 +17,16 @@ namespace Books.Application.Tests.Unit
         private readonly IBookRepository _bookRepository = Substitute.For<IBookRepository>();
         private readonly IValidator<Book> _validator;
         private readonly ILoggerAdapter<BookService> _logger = Substitute.For<ILoggerAdapter<BookService>>();
+        private readonly GetAllBooksOptions _options;
 
         public BookServiceTests()
         {
+            _options = new GetAllBooksOptions
+            {
+                Page = 1,
+                PageSize = 10,
+            };
+
             _sut = new BookService(_bookRepository, _logger, _validator);
         }
 
@@ -318,10 +325,10 @@ namespace Books.Application.Tests.Unit
                 book
             };
 
-            _bookRepository.GetAllAsync().Returns(books);
+            _bookRepository.GetAllAsync(_options).Returns(books);
 
             // Act
-            var result = await _sut.GetAllAsync();
+            var result = await _sut.GetAllAsync(_options);
 
             // Assert
             result.Single().Should().BeEquivalentTo(book);
@@ -332,10 +339,10 @@ namespace Books.Application.Tests.Unit
         public async Task GetAllAsync_ShouldReturnEmptyList_WhenNoBooksExist()
         {
             // Arrange
-            _bookRepository.GetAllAsync().Returns(Enumerable.Empty<Book>());
+            _bookRepository.GetAllAsync(_options).Returns(Enumerable.Empty<Book>());
 
             // Act
-            var result = await _sut.GetAllAsync();
+            var result = await _sut.GetAllAsync(_options);
 
             // Assert
             result.Should().BeEmpty();
@@ -345,10 +352,10 @@ namespace Books.Application.Tests.Unit
         public async Task GetAllAsync_ShouldLogMessages_WhenInvoked()
         {
             // Arrange
-            _bookRepository.GetAllAsync().Returns(Enumerable.Empty<Book>());
+            _bookRepository.GetAllAsync(_options).Returns(Enumerable.Empty<Book>());
 
             // Act
-            await _sut.GetAllAsync();
+            await _sut.GetAllAsync(_options);
 
             // Assert
             _logger.Received(1).LogInformation(Arg.Is("Retrieving all books"));
@@ -360,10 +367,10 @@ namespace Books.Application.Tests.Unit
         {
             // Arrange
             var sqliteException = new SqliteException("Something went wrong", 500);
-            _bookRepository.GetAllAsync().Throws(sqliteException);
+            _bookRepository.GetAllAsync(_options).Throws(sqliteException);
 
             // Act
-            var requestAction = async () => await _sut.GetAllAsync();
+            var requestAction = async () => await _sut.GetAllAsync(_options);
 
             // Assert
             await requestAction.Should()
