@@ -16,10 +16,12 @@ namespace Books.Api.Controllers
         }
 
         [HttpGet(ApiEndpoints.Books.GetAll)]
-        public async Task<IActionResult> GetAll(CancellationToken token)
+        public async Task<IActionResult> GetAll([FromQuery] GetAllBooksRequest request, CancellationToken token)
         {
-            var books = await _bookService.GetAllAsync(token);
-            var booksResponse = books.MapToResponse();
+            var options = request.MapToOptions();
+
+            var books = await _bookService.GetAllAsync(options, token);
+            var booksResponse = books.MapToResponse(1, 1, 15);
 
             return Ok(booksResponse);
         }

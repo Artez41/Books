@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Books.Application.Database;
 using Books.Application.Models;
+using System.Collections.Generic;
 
 namespace Books.Application.Repositories
 {
@@ -65,18 +66,25 @@ namespace Books.Application.Repositories
                 """, new { id }, cancellationToken: token));
         }
 
-        public async Task<IEnumerable<Book>> GetAllAsync(CancellationToken token = default)
+        public async Task<IEnumerable<Book>> GetAllAsync(GetAllBooksOptions options, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
-            var result = await connection.QueryAsync(new CommandDefinition("""
+            var result = await connection.QueryAsync(new CommandDefinition($"""
                 select 
                     b.*,
                     string_agg(distinct g.name, ',') as genres
                 from books b
                     left join genres g on b.id = g.bookId
                 group by id
-                """, cancellationToken: token));
+                limit @pageSize
+                offset @pageOffset
+                """, new
+                    {
+                       pageSize = options.PageSize,
+                       pageOffset = (options.Page - 1) * options.PageSize
+                    }, 
+                    cancellationToken: token));
 
             return result.Select(x => new Book
             {
