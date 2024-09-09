@@ -77,12 +77,14 @@ namespace Books.Application.Repositories
                 from books b
                     left join genres g on b.id = g.bookId
                 where (@title is null or b.title like ('%' || @title || '%'))
+                    and (@author is null or b.author like ('%' || @author || '%')) 
                 group by id
                 limit @pageSize
                 offset @pageOffset
                 """, new
                     {
                        title = options.Title,
+                       author = options.Author,
                        pageSize = options.PageSize,
                        pageOffset = (options.Page - 1) * options.PageSize
                     }, 
