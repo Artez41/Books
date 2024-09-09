@@ -70,7 +70,7 @@ namespace Books.Application.Services
 
             try
             {
-                return await _bookRepository.GetAllAsync(token);
+                return await _bookRepository.GetAllAsync(options, token);
             }
             catch(Exception ex)
             {

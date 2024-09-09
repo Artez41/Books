@@ -1,6 +1,7 @@
 ﻿using Dapper;
 using Books.Application.Database;
 using Books.Application.Models;
+using System.Collections.Generic;
 
 namespace Books.Application.Repositories
 {
@@ -69,7 +70,7 @@ namespace Books.Application.Repositories
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
-            var result = await connection.QueryAsync(new CommandDefinition("""
+            var result = await connection.QueryAsync(new CommandDefinition($"""
                 select 
                     b.*,
                     string_agg(distinct g.name, ',') as genres
