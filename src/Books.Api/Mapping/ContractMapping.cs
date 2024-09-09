@@ -64,6 +64,7 @@ namespace Books.Api.Mapping
         {
             return new GetAllBooksOptions
             {
+                Title = request.Title,
                 Page = request.Page,
                 PageSize = request.PageSize
             };

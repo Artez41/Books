@@ -2,5 +2,6 @@
 {
     public class GetAllBooksRequest : PagedRequest
     {
+        public required string? Title { get; init; }
     }
 }

@@ -76,11 +76,13 @@ namespace Books.Application.Repositories
                     string_agg(distinct g.name, ',') as genres
                 from books b
                     left join genres g on b.id = g.bookId
+                where (@title is null or b.title like ('%' || @title || '%'))
                 group by id
                 limit @pageSize
                 offset @pageOffset
                 """, new
                     {
+                       title = options.Title,
                        pageSize = options.PageSize,
                        pageOffset = (options.Page - 1) * options.PageSize
                     }, 
