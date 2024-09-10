@@ -69,6 +69,16 @@ namespace Books.Application.Repositories
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
 
+            string orderClause = string.Empty;
+
+            if (options.SortField is not null)
+            {
+                orderClause = $"""
+                    b.{options.SortField}
+                    order by b.{options.SortField} {(options.SortOrder == SortOrder.Ascending ? "asc" : "desc")}
+                    """;
+            }
+
             var result = await connection.QueryAsync(new CommandDefinition($"""
                 select 
                     b.*,
@@ -77,7 +87,7 @@ namespace Books.Application.Repositories
                     left join genres g on b.id = g.bookId
                 where (@title is null or b.title like ('%' || @title || '%'))
                     and (@author is null or b.author like ('%' || @author || '%')) 
-                group by id
+                group by id, {orderClause}
                 limit @pageSize
                 offset @pageOffset
                 """, new

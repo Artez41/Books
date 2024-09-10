@@ -16,6 +16,7 @@ namespace Books.Application.Tests.Unit
         private readonly BookService _sut;
         private readonly IBookRepository _bookRepository = Substitute.For<IBookRepository>();
         private readonly IValidator<Book> _validator;
+        private readonly IValidator<GetAllBooksOptions> _booksOptionsValidator;
         private readonly ILoggerAdapter<BookService> _logger = Substitute.For<ILoggerAdapter<BookService>>();
         private readonly GetAllBooksOptions _options;
 
@@ -27,7 +28,7 @@ namespace Books.Application.Tests.Unit
                 PageSize = 10,
             };
 
-            _sut = new BookService(_bookRepository, _logger, _validator);
+            _sut = new BookService(_bookRepository, _logger, _validator, _booksOptionsValidator);
         }
 
         [Fact]
