@@ -21,7 +21,7 @@ namespace Books.Api.Controllers
             var options = request.MapToOptions();
 
             var books = await _bookService.GetAllAsync(options, token);
-            var booksResponse = books.MapToResponse(1, 1, 15);
+            var booksResponse = books.MapToResponse(options.Page, options.PageSize, 15);
 
             return Ok(booksResponse);
         }
