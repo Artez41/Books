@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Books.Application.Database;
 using Books.Application.Models;
-using System.Collections.Generic;
 
 namespace Books.Application.Repositories
 {
