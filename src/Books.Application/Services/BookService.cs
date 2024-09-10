@@ -10,12 +10,15 @@ namespace Books.Application.Services
     {
         private readonly IBookRepository _bookRepository;
         private readonly IValidator<Book> _bookValidator;
+        private readonly IValidator<GetAllBooksOptions> _booksOptionsValidator;
         private readonly ILoggerAdapter<BookService> _logger;
 
-        public BookService(IBookRepository bookRepository, ILoggerAdapter<BookService> logger, IValidator<Book> bookValidator)
+        public BookService(IBookRepository bookRepository, ILoggerAdapter<BookService> logger, 
+            IValidator<Book> bookValidator, IValidator<GetAllBooksOptions> booksOptionsValidator)
         {
             _bookRepository = bookRepository;
             _bookValidator = bookValidator;
+            _booksOptionsValidator = booksOptionsValidator;
             _logger = logger;
         }
 
@@ -67,6 +70,8 @@ namespace Books.Application.Services
         {
             _logger.LogInformation("Retrieving all books");
             var stopWatch = Stopwatch.StartNew();
+
+            await _booksOptionsValidator.ValidateAndThrowAsync(options, token);
 
             try
             {

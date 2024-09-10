@@ -7,13 +7,17 @@ namespace Books.Application.Validators
     {
         public static readonly string[] AcceptableSortFields =
         {
-            "yearofrelease"
+            "yearofrelease", "title", "author", "numberofpages"
         };
 
         public GetAllBooksOptionsValidator()
         {
             RuleFor(x => x.Page)
                 .GreaterThanOrEqualTo(1);
+
+            RuleFor(x => x.SortField)
+                .Must(x => x is null || AcceptableSortFields.Contains(x, StringComparer.OrdinalIgnoreCase))
+                .WithMessage("You can only sort by 'yearofrelease', 'title', 'author' or 'numberofpages'");
 
             RuleFor(x => x.PageSize)
                 .InclusiveBetween(1, 25)
