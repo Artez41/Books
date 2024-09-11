@@ -14,7 +14,7 @@ namespace Books.Api.Controllers
         private const string TokenSecret = "SuperSecretKeyShouldBeInSafePlace";
         private static readonly TimeSpan TokenLifetime = TimeSpan.FromHours(1);
 
-        [HttpPost]
+        [HttpPost(ApiEndpoints.Auth.Token)]
         public IActionResult GenerateToken([FromBody]TokenGenerationRequest request)
         {
             var tokenHandler = new JwtSecurityTokenHandler();
