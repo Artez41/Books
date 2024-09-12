@@ -40,7 +40,7 @@ namespace Books.Api.Controllers
             return Ok(book.MapToResponse());
         }
 
-        [Authorize(AuthConstants.AdminUserPolicyName)]
+        [Authorize(AuthConstants.LibrarianPolicyName)]
         [HttpPost(ApiEndpoints.Books.Create)]
         public async Task<IActionResult> Create([FromBody] CreateBookRequest request, CancellationToken token)
         {
@@ -50,7 +50,7 @@ namespace Books.Api.Controllers
             return CreatedAtAction(nameof(Get), new { idOrSlug =  book.Id }, book);
         }
 
-        [Authorize(AuthConstants.AdminUserPolicyName)]
+        [Authorize(AuthConstants.LibrarianPolicyName)]
         [HttpPut(ApiEndpoints.Books.Update)]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateBookRequest request, CancellationToken token)
         {

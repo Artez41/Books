@@ -33,6 +33,12 @@ builder.Services.AddAuthorization(x =>
 {
     x.AddPolicy(AuthConstants.AdminUserPolicyName, 
         p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+
+    x.AddPolicy(AuthConstants.LibrarianPolicyName,
+        p => p.RequireAssertion(c =>
+            c.User.HasClaim(m => m is { Type: AuthConstants.AdminUserClaimName, Value: "true" }) ||
+            c.User.HasClaim(m => m is { Type: AuthConstants.LibrarianClaimName, Value: "true" }))
+    );
 });
 
 builder.Services.AddControllers();
