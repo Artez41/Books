@@ -1,3 +1,4 @@
+using Books.Api;
 using Books.Application;
 using Books.Application.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -26,6 +27,12 @@ builder.Services.AddAuthentication(x =>
         ValidateIssuer = true,
         ValidateAudience = true
     };
+});
+
+builder.Services.AddAuthorization(x =>
+{
+    x.AddPolicy(AuthConstants.AdminUserPolicyName, 
+        p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
 });
 
 builder.Services.AddControllers();
