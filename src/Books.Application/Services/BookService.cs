@@ -131,6 +131,27 @@ namespace Books.Application.Services
             }
         }
 
+        public async Task<int> GetCountAsync(GetAllBooksOptions options, CancellationToken token = default)
+        {
+            _logger.LogInformation("Get books count");
+            var stopWatch = Stopwatch.StartNew();
+
+            try
+            {
+                return await _bookRepository.GetCountAsync(options, token);
+            }
+            catch(Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong while counting number of books");
+                throw;
+            }
+            finally
+            {
+                stopWatch.Stop();
+                _logger.LogInformation("Books counted in {0}ms", stopWatch.ElapsedMilliseconds);
+            }
+        }
+
         public async Task<Book?> UpdateAsync(Book book, CancellationToken token = default)
         {
             _logger.LogInformation("Update book with id: {0}", book.Id);

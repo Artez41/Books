@@ -22,7 +22,9 @@ namespace Books.Api.Controllers
             var options = request.MapToOptions();
 
             var books = await _bookService.GetAllAsync(options, token);
-            var booksResponse = books.MapToResponse(options.Page, options.PageSize, 15);
+            var booksCount = await _bookService.GetCountAsync(options, token);
+
+            var booksResponse = books.MapToResponse(options.Page, options.PageSize, booksCount);
 
             return Ok(booksResponse);
         }
