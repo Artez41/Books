@@ -1,4 +1,4 @@
-﻿namespace Books.Api
+﻿namespace Books.Api.Auth
 {
     public static class AuthConstants
     {
