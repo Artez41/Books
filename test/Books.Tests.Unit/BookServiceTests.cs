@@ -473,7 +473,7 @@ namespace Books.Application.Tests.Unit
             _bookRepository.UpdateAsync(updatedBook).Returns(true);
 
             // Act
-            var result = await _sut.UpdateAsync(updatedBook);
+            _ = await _sut.UpdateAsync(updatedBook);
 
             // Assert
             _logger.Received(1).LogInformation(Arg.Is("Update book with id: {0}"), updatedBook.Id);
@@ -568,8 +568,8 @@ namespace Books.Application.Tests.Unit
             await requestAction.Should()
                 .ThrowAsync<SqliteException>().WithMessage("Something went wrong");
 
-            _logger.LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
-            _logger.LogError(sqliteException, Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
+            _logger.Received(1).LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
+            _logger.Received(1).LogError(sqliteException, Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
         }
 
         [Fact]
