@@ -15,8 +15,8 @@ namespace Books.Application.Tests.Unit
     {
         private readonly BookService _sut;
         private readonly IBookRepository _bookRepository = Substitute.For<IBookRepository>();
-        private readonly IValidator<Book> _validator;
-        private readonly IValidator<GetAllBooksOptions> _booksOptionsValidator;
+        private readonly IValidator<Book> _validator = Substitute.For<IValidator<Book>>();
+        private readonly IValidator<GetAllBooksOptions> _booksOptionsValidator = Substitute.For<IValidator<GetAllBooksOptions>>();
         private readonly ILoggerAdapter<BookService> _logger = Substitute.For<ILoggerAdapter<BookService>>();
         private readonly GetAllBooksOptions _options;
 
@@ -569,7 +569,7 @@ namespace Books.Application.Tests.Unit
                 .ThrowAsync<SqliteException>().WithMessage("Something went wrong");
 
             _logger.Received(1).LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
-            _logger.Received(1).LogError(sqliteException, Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
+            _logger.Received(1).LogError(sqliteException, Arg.Is("Something went wrong while deleting book with id {0}"), bookId);
         }
 
         [Fact]
