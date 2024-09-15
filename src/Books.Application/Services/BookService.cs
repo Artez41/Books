@@ -41,7 +41,7 @@ namespace Books.Application.Services
             finally
             {
                 stopWatch.Stop();
-                _logger.LogInformation("Book with id {0} created in {1}ms", book.Id, stopWatch.ElapsedMilliseconds); ;
+                _logger.LogInformation("Book with id {0} created in {1}ms", book.Id, stopWatch.ElapsedMilliseconds);
             }
         }
 
