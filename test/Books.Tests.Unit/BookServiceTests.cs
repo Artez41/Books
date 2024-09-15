@@ -15,8 +15,8 @@ namespace Books.Application.Tests.Unit
     {
         private readonly BookService _sut;
         private readonly IBookRepository _bookRepository = Substitute.For<IBookRepository>();
-        private readonly IValidator<Book> _validator;
-        private readonly IValidator<GetAllBooksOptions> _booksOptionsValidator;
+        private readonly IValidator<Book> _validator = Substitute.For<IValidator<Book>>();
+        private readonly IValidator<GetAllBooksOptions> _booksOptionsValidator = Substitute.For<IValidator<GetAllBooksOptions>>();
         private readonly ILoggerAdapter<BookService> _logger = Substitute.For<ILoggerAdapter<BookService>>();
         private readonly GetAllBooksOptions _options;
 
@@ -473,7 +473,7 @@ namespace Books.Application.Tests.Unit
             _bookRepository.UpdateAsync(updatedBook).Returns(true);
 
             // Act
-            var result = await _sut.UpdateAsync(updatedBook);
+            _ = await _sut.UpdateAsync(updatedBook);
 
             // Assert
             _logger.Received(1).LogInformation(Arg.Is("Update book with id: {0}"), updatedBook.Id);
@@ -549,8 +549,8 @@ namespace Books.Application.Tests.Unit
             var result = await _sut.DeleteByIdAsync(bookId);
 
             // Assert
-            _logger.LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
-            _logger.LogInformation(Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
+            _logger.Received(1).LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
+            _logger.Received(1).LogInformation(Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
         }
 
         [Fact]
@@ -568,8 +568,53 @@ namespace Books.Application.Tests.Unit
             await requestAction.Should()
                 .ThrowAsync<SqliteException>().WithMessage("Something went wrong");
 
-            _logger.LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
-            _logger.LogError(sqliteException, Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
+            _logger.Received(1).LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
+            _logger.Received(1).LogError(sqliteException, Arg.Is("Something went wrong while deleting book with id {0}"), bookId);
+        }
+
+        [Fact]
+        public async Task GetCountAsync_ShouldReturnCount_WhenBooksExist()
+        {
+            // Arrange
+            _bookRepository.GetCountAsync(_options).Returns(1);
+
+            // Act
+            var result = await _sut.GetCountAsync(_options);
+
+            // Assert
+            result.Should().BeGreaterThanOrEqualTo(0);
+        }
+
+        [Fact]
+        public async Task GetCountAsync_ShouldLogMessages_WhenInvoked()
+        {
+            // Arrange
+            _bookRepository.GetCountAsync(_options).Returns(1);
+
+            // Act
+            _ = await _sut.GetCountAsync(_options);
+
+            // Assert
+            _logger.Received(1).LogInformation(Arg.Is("Get books count"));
+            _logger.Received(1).LogInformation(Arg.Is("Books counted in {0}ms"), Arg.Any<long>());
+        }
+
+        [Fact]
+        public async Task GetCountAsync_ShouldLogMessages_WhenExceptionIsThrown()
+        {
+            // Arrange
+            var sqliteException = new SqliteException("Something went wrong", 500);
+            _bookRepository.GetCountAsync(_options).ThrowsAsync(sqliteException);
+
+            // Act
+            var requestActtion = async () => await _sut.GetCountAsync(_options);
+
+            // Assert
+            await requestActtion.Should()
+                .ThrowAsync<SqliteException>().WithMessage("Something went wrong");
+
+            _logger.Received(1).LogInformation(Arg.Is("Get books count"));
+            _logger.Received(1).LogError(sqliteException, Arg.Is("Something went wrong while counting number of books"));
         }
     }
 }

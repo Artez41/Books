@@ -11,5 +11,6 @@ namespace Books.Application.Repositories
         Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
         Task<bool> ExistsByIdAsync(Guid id, CancellationToken token = default);
         Task<IEnumerable<Book>> GetAllAsync(GetAllBooksOptions options, CancellationToken token = default);
+        Task<int> GetCountAsync(GetAllBooksOptions options, CancellationToken token = default);
     }
 }

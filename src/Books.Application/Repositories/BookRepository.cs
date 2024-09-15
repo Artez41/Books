@@ -74,7 +74,7 @@ namespace Books.Application.Repositories
             if (options.SortField is not null)
             {
                 orderClause = $"""
-                    b.{options.SortField}
+                    , b.{options.SortField}
                     order by b.{options.SortField} {(options.SortOrder == SortOrder.Ascending ? "asc" : "desc")}
                     """;
             }
@@ -87,7 +87,7 @@ namespace Books.Application.Repositories
                     left join genres g on b.id = g.bookId
                 where (@title is null or b.title like ('%' || @title || '%'))
                     and (@author is null or b.author like ('%' || @author || '%')) 
-                group by id, {orderClause}
+                group by id {orderClause}
                 limit @pageSize
                 offset @pageOffset
                 """, new
@@ -143,6 +143,22 @@ namespace Books.Application.Repositories
                 return null;
 
             return book;
+        }
+
+        public async Task<int> GetCountAsync(GetAllBooksOptions options, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync();
+            return await connection.QuerySingleAsync<int>(new CommandDefinition("""
+                select count(id) 
+                from books b
+                where (@title is null or b.title like ('%' || @title || '%'))
+                    and (@author is null or b.author like ('%' || @author || '%'))
+            """, new
+                {
+                    title = options.Title,
+                    author = options.Author
+                }, 
+                cancellationToken: token));
         }
 
         public async Task<bool> UpdateAsync(Book book, CancellationToken token = default)
