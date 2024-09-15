@@ -13,6 +13,8 @@ namespace Books.Application
         {
             services.AddSingleton<IBookRepository, BookRepository>();
             services.AddSingleton<IBookService, BookService>();
+            services.AddSingleton<IRatingRepository, RatingRepository>();
+            services.AddSingleton<IRatingService, RatingService>();
             services.AddTransient(typeof(ILoggerAdapter<>), typeof(LoggerAdapter<>));
             services.AddValidatorsFromAssemblyContaining<IApplicationMarker>(ServiceLifetime.Singleton);
             return services;
