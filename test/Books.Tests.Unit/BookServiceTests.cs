@@ -549,8 +549,8 @@ namespace Books.Application.Tests.Unit
             var result = await _sut.DeleteByIdAsync(bookId);
 
             // Assert
-            _logger.LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
-            _logger.LogInformation(Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
+            _logger.Received(1).LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
+            _logger.Received(1).LogInformation(Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
         }
 
         [Fact]
@@ -570,6 +570,51 @@ namespace Books.Application.Tests.Unit
 
             _logger.LogInformation(Arg.Is("Deleting book with id: {0}"), bookId);
             _logger.LogError(sqliteException, Arg.Is("Book with id {0} deleted in {1}ms"), bookId, Arg.Any<long>());
+        }
+
+        [Fact]
+        public async Task GetCountAsync_ShouldReturnCount_WhenBooksExist()
+        {
+            // Arrange
+            _bookRepository.GetCountAsync(_options).Returns(1);
+
+            // Act
+            var result = await _sut.GetCountAsync(_options);
+
+            // Assert
+            result.Should().BeGreaterThanOrEqualTo(0);
+        }
+
+        [Fact]
+        public async Task GetCountAsync_ShouldLogMessages_WhenInvoked()
+        {
+            // Arrange
+            _bookRepository.GetCountAsync(_options).Returns(1);
+
+            // Act
+            _ = await _sut.GetCountAsync(_options);
+
+            // Assert
+            _logger.Received(1).LogInformation(Arg.Is("Get books count"));
+            _logger.Received(1).LogInformation(Arg.Is("Books counted in {0}ms"), Arg.Any<long>());
+        }
+
+        [Fact]
+        public async Task GetCountAsync_ShouldLogMessages_WhenExceptionIsThrown()
+        {
+            // Arrange
+            var sqliteException = new SqliteException("Something went wrong", 500);
+            _bookRepository.GetCountAsync(_options).ThrowsAsync(sqliteException);
+
+            // Act
+            var requestActtion = async () => await _sut.GetCountAsync(_options);
+
+            // Assert
+            await requestActtion.Should()
+                .ThrowAsync<SqliteException>().WithMessage("Something went wrong");
+
+            _logger.Received(1).LogInformation(Arg.Is("Get books count"));
+            _logger.Received(1).LogError(sqliteException, Arg.Is("Something went wrong while counting number of books"));
         }
     }
 }
