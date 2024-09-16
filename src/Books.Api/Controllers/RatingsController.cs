@@ -1,4 +1,5 @@
 ﻿using Books.Api.Auth;
+using Books.Api.Mapping;
 using Books.Application.Services;
 using Books.Contracts.Requests;
 using Microsoft.AspNetCore.Authorization;
@@ -23,6 +24,16 @@ namespace Books.Api.Controllers
             var userId = HttpContext.GetUserId();
             var result = await _ratingService.RateBookAsync(id, userId!.Value, request.Rating, token);
             return result ? Ok() : NotFound();
+        }
+
+        [Authorize]
+        [HttpGet(ApiEndpoints.Ratings.GetUserRatings)]
+        public async Task<IActionResult> GetUserRatings(CancellationToken token)
+        {
+            var userId = HttpContext.GetUserId();
+            var ratings = await _ratingService.GetRatingsForUserAsync(userId!.Value, token);
+            var ratingsResponse = ratings.MapToResponse();
+            return Ok(ratingsResponse);
         }
     }
 }
