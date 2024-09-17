@@ -3,6 +3,8 @@ using Books.Application.Models;
 using Books.Application.Repositories;
 using Books.Application.Services;
 using FluentAssertions;
+using FluentValidation;
+using FluentValidation.Results;
 using Microsoft.Data.Sqlite;
 using NSubstitute;
 using NSubstitute.ExceptionExtensions;
@@ -14,11 +16,12 @@ namespace Books.Application.Tests.Unit
     {
         private readonly RatingService _sut;
         private readonly IRatingRepository _ratingRepository = Substitute.For<IRatingRepository>();
+        private readonly IBookRepository _bookRepository = Substitute.For<IBookRepository>();
         private readonly ILoggerAdapter<RatingService> _logger = Substitute.For<ILoggerAdapter<RatingService>>();
 
         public RatingServiceTests()
         {
-            _sut = new RatingService(_ratingRepository, _logger);
+            _sut = new RatingService(_ratingRepository, _logger, _bookRepository);
         }
 
         [Fact]
@@ -29,6 +32,7 @@ namespace Books.Application.Tests.Unit
             var userId = Guid.NewGuid();
             int rating = 10;
 
+            _bookRepository.ExistsByIdAsync(bookId).Returns(true);
             _ratingRepository.RateBookAsync(bookId, userId, rating).Returns(true);
 
             // Act
@@ -36,6 +40,38 @@ namespace Books.Application.Tests.Unit
 
             // Assert
             result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task RateBookAsync_ShouldReturnFalse_WhenBookNotExists()
+        {
+            // Arrange
+            var bookId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            int rating = 10;
+
+            _bookRepository.ExistsByIdAsync(bookId).Returns(false);
+
+            // Act
+            var result = await _sut.RateBookAsync(bookId, userId, rating);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task RateBookAsync_ShouldThrowValidationException_WhenRatingBelowZero()
+        {
+            // Arrange
+            var bookId = Guid.NewGuid();
+            var userId = Guid.NewGuid();
+            int rating = -5;
+
+            // Act
+            var result = async () => await _sut.RateBookAsync(bookId, userId, rating);
+
+            // Assert
+            await result.Should().ThrowAsync<ValidationException>();
         }
 
         [Fact]
@@ -84,6 +120,7 @@ namespace Books.Application.Tests.Unit
             var userId = Guid.NewGuid();
             int rating = 7;
 
+            _bookRepository.ExistsByIdAsync(bookId).Returns(true);
             _ratingRepository.RateBookAsync(bookId, userId, rating).ThrowsAsync(sqliteException);
 
             // Act
