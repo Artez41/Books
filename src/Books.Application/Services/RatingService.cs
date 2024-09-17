@@ -1,6 +1,8 @@
 ﻿using Books.Application.Logging;
 using Books.Application.Models;
 using Books.Application.Repositories;
+using FluentValidation;
+using FluentValidation.Results;
 using System.Diagnostics;
 
 namespace Books.Application.Services
@@ -8,11 +10,13 @@ namespace Books.Application.Services
     public class RatingService : IRatingService
     {
         private readonly IRatingRepository _ratingRepository;
+        private readonly IBookRepository _bookRepository;
         private readonly ILoggerAdapter<RatingService> _logger;
 
-        public RatingService(IRatingRepository ratingRepository, ILoggerAdapter<RatingService> logger)
+        public RatingService(IRatingRepository ratingRepository, ILoggerAdapter<RatingService> logger, IBookRepository bookRepository)
         {
             _ratingRepository = ratingRepository;
+            _bookRepository = bookRepository;
             _logger = logger;
         }
 
@@ -66,6 +70,20 @@ namespace Books.Application.Services
 
             try
             {
+                if (rating is <= 0 or > 10)
+                    throw new ValidationException(new[]
+                    {
+                        new ValidationFailure
+                        {
+                            PropertyName = "Rating",
+                            ErrorMessage = "Rating must be between 1 and 5"
+                        }
+                    });
+                
+                var bookExists = await _bookRepository.ExistsByIdAsync(bookId, token);
+                if (!bookExists)
+                    return false;
+
                 return await _ratingRepository.RateBookAsync(bookId, userId, rating, token);
             }
             catch (Exception ex)
