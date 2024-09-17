@@ -13,6 +13,17 @@ namespace Books.Application.Repositories
             _dbConnectionFactory = dbConnectionFactory;
         }
 
+        public async Task<bool> DeleteRatingAsync(Guid bookId, Guid userId, CancellationToken token = default)
+        {
+            using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
+            var result = await connection.ExecuteAsync(new CommandDefinition("""
+                delete from ratings
+                where bookid = @bookId and userid = @userId
+                """, new { bookId, userId }, cancellationToken: token));
+
+            return result > 0;
+        }
+
         public async Task<IEnumerable<BookRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);

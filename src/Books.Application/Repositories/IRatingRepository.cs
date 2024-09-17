@@ -6,5 +6,6 @@ namespace Books.Application.Repositories
     {
         Task<bool> RateBookAsync(Guid bookId, Guid userId, int rating, CancellationToken token = default);
         Task<IEnumerable<BookRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default);
+        Task<bool> DeleteRatingAsync(Guid bookId, Guid userId, CancellationToken token = default);
     }
 }

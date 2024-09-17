@@ -35,5 +35,14 @@ namespace Books.Api.Controllers
             var ratingsResponse = ratings.MapToResponse();
             return Ok(ratingsResponse);
         }
+
+        [Authorize]
+        [HttpDelete(ApiEndpoints.Books.DeleteRating)]
+        public async Task<IActionResult> DeleteRating([FromRoute] Guid id, CancellationToken token)
+        {
+            var userId = HttpContext.GetUserId();
+            var result = await _ratingService.DeleteRatingAsync(id, userId!.Value, token);
+            return result ? Ok() : NotFound();
+        }
     }
 }

@@ -16,6 +16,28 @@ namespace Books.Application.Services
             _logger = logger;
         }
 
+        public async Task<bool> DeleteRatingAsync(Guid bookId, Guid userId, CancellationToken token = default)
+        {
+            _logger.LogInformation("Delete rating of book with id {0} by user with id {1}", bookId, userId);
+            var stopWatch = Stopwatch.StartNew();
+
+            try
+            {
+                return await _ratingRepository.DeleteRatingAsync(bookId, userId, token);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Something went wrong while deleting rating");
+                throw;
+            }
+            finally
+            {
+                stopWatch.Stop();
+                _logger.LogInformation("Rating of user with id {0} for book with id {1} deleted in {2}ms", userId, bookId, 
+                    stopWatch.ElapsedMilliseconds);
+            }
+        }
+
         public async Task<IEnumerable<BookRating>> GetRatingsForUserAsync(Guid userId, CancellationToken token = default)
         {
             _logger.LogInformation("Retrieving ratings of user with id {0}", userId);
