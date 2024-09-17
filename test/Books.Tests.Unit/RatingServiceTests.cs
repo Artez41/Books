@@ -190,5 +190,79 @@ namespace Books.Application.Tests.Unit
             _logger.Received(1).LogInformation(Arg.Is("Retrieving ratings of user with id {0}"), userId);
             _logger.Received(1).LogError(sqliteException, Arg.Is("Something went wrong while retrieving ratings"));
         }
+
+        [Fact]
+        public async Task DeleteRatingAsync_ShouldReturnTrue_WhenRatingDeleted()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var bookId = Guid.NewGuid();
+
+            _ratingRepository.DeleteRatingAsync(bookId, userId).Returns(true);
+
+            // Act
+            var result = await _sut.DeleteRatingAsync(bookId, userId);
+
+            // Assert
+            result.Should().BeTrue();
+        }
+
+        [Fact]
+        public async Task DeleteRatingAsync_ShouldReturnFalse_WhenRatingNotDeleted()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var bookId = Guid.NewGuid();
+
+            _ratingRepository.DeleteRatingAsync(bookId, userId).Returns(false);
+
+            // Act
+            var result = await _sut.DeleteRatingAsync(bookId, userId);
+
+            // Assert
+            result.Should().BeFalse();
+        }
+
+        [Fact]
+        public async Task DeleteRatingAsync_ShouldLogMessages_WhenInvoked()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var bookId = Guid.NewGuid();
+
+            _ratingRepository.DeleteRatingAsync(bookId, userId).Returns(true);
+
+            // Act
+            var result = await _sut.DeleteRatingAsync(bookId, userId);
+
+            // Assert
+            _logger.Received(1).LogInformation(Arg.Is("Delete rating of book with id {0} by user with id {1}"), 
+                bookId, userId);
+            _logger.Received(1).LogInformation(Arg.Is("Rating of user with id {0} for book with id {1} deleted in {2}ms"),
+                userId, bookId, Arg.Any<long>());
+        }
+
+        [Fact]
+        public async Task DeleteRatingAsync_ShouldLogMessages_WhenExceptionIsThrown()
+        {
+            // Arrange
+            var userId = Guid.NewGuid();
+            var bookId = Guid.NewGuid();
+            var sqliteException = new SqliteException("Something went wrong", 500);
+
+            _ratingRepository.DeleteRatingAsync(bookId, userId).ThrowsAsync(sqliteException);
+
+            // Act
+            var requestAction = async () => await _sut.DeleteRatingAsync(bookId, userId);
+
+            // Assert
+            await requestAction.Should()
+                .ThrowAsync<SqliteException>()
+                .WithMessage("Something went wrong");
+
+            _logger.Received(1).LogInformation(Arg.Is("Delete rating of book with id {0} by user with id {1}"),
+                bookId, userId);
+            _logger.Received(1).LogError(sqliteException, Arg.Is("Something went wrong while deleting rating"));
+        }
     }
 }
