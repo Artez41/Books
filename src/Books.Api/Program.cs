@@ -1,4 +1,4 @@
-using Books.Api;
+using Books.Api.Auth;
 using Books.Application;
 using Books.Application.Database;
 using Microsoft.AspNetCore.Authentication.JwtBearer;

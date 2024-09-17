@@ -1,6 +1,7 @@
 ﻿using Books.Application.Models;
 using Books.Contracts.Requests;
 using Books.Contracts.Responses;
+using System.Diagnostics;
 
 namespace Books.Api.Mapping
 {
@@ -72,6 +73,16 @@ namespace Books.Api.Mapping
                 Page = request.Page,
                 PageSize = request.PageSize
             };
+        }
+
+        public static IEnumerable<BookRatingResponse> MapToResponse(this IEnumerable<BookRating> ratings)
+        {
+            return ratings.Select(x => new BookRatingResponse
+            {
+                Rating = x.Rating,
+                Slug = x.Slug,
+                BookId = x.BookId
+            });
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Books.Api.Mapping;
+﻿using Books.Api.Auth;
+using Books.Api.Mapping;
 using Books.Application.Services;
 using Books.Contracts.Requests;
 using Microsoft.AspNetCore.Authorization;
