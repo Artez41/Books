@@ -5,12 +5,14 @@ namespace Books.Application.Models
     public partial class Book
     {
         public required Guid Id { get; init; }
-        public required string Title { get; init; }
+        public required string Title { get; set; }
         public string Slug => GenerateSlug();
-        public required string Author { get; init; }
-        public required string Description { get; init; }
-        public required int YearOfRelease { get; init; }
-        public required int NumberOfPages { get; init; }
+        public required string Author { get; set; }
+        public required string Description { get; set; }
+        public required int YearOfRelease { get; set; }
+        public int NumberOfPages { get; set; }
+        public float? TotalRating { get; set; }
+        public int? UserRating { get; set; }
         public required List<string> Genres { get; init; } = new();
 
         private string GenerateSlug()

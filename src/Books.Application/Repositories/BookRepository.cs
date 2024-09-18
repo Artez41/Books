@@ -82,16 +82,21 @@ namespace Books.Application.Repositories
             var result = await connection.QueryAsync(new CommandDefinition($"""
                 select 
                     b.*,
-                    string_agg(distinct g.name, ',') as genres
+                    string_agg(distinct g.name, ',') as genres,
+                    round(avg(r.rating), 1) as rating,
+                    ur.rating as userrating
                 from books b
-                    left join genres g on b.id = g.bookId
+                    left join genres g on b.id = g.bookid
+                    left join ratings r on b.id = r.bookid
+                    left join ratings ur on b.id = ur.bookid and ur.userid = @userId
                 where (@title is null or b.title like ('%' || @title || '%'))
                     and (@author is null or b.author like ('%' || @author || '%')) 
-                group by id {orderClause}
+                group by id, userrating {orderClause}
                 limit @pageSize
                 offset @pageOffset
                 """, new
                     {
+                       userId = options.UserId,
                        title = options.Title,
                        author = options.Author,
                        pageSize = options.PageSize,
@@ -105,6 +110,8 @@ namespace Books.Application.Repositories
                 Title = x.title,
                 Author = x.author,
                 Description = x.description,
+                TotalRating = (float?)x.rating,
+                UserRating = (int?)x.userrating,
                 YearOfRelease = x.yearofrelease,
                 NumberOfPages = x.numberofpages,
                 Genres = Enumerable.ToList(x.genres.Split(','))
