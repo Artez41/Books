@@ -2,6 +2,7 @@
 using Books.Contracts.Requests;
 using Books.Contracts.Responses;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 
 namespace Books.Api.Mapping
 {
@@ -43,6 +44,8 @@ namespace Books.Api.Mapping
                 Title = book.Title,
                 Author = book.Author,
                 Description = book.Description,
+                UserRating = book.UserRating,
+                TotalRating = book.TotalRating,
                 YearOfRelease = book.YearOfRelease,
                 NumberOfPages = book.NumberOfPages,
                 Genres = book.Genres.ToList()
@@ -73,6 +76,12 @@ namespace Books.Api.Mapping
                 Page = request.Page,
                 PageSize = request.PageSize
             };
+        }
+
+        public static GetAllBooksOptions WithUserId(this GetAllBooksOptions options, Guid? userId)
+        {
+            options.UserId = userId;
+            return options;
         }
 
         public static IEnumerable<BookRatingResponse> MapToResponse(this IEnumerable<BookRating> ratings)
