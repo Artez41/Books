@@ -33,7 +33,7 @@ namespace Books.Application.Repositories
                 """, new { bookId }, cancellationToken: token));
         }
 
-        public async Task<(float? totalRating, int? userRating)> GetRatingASync(Guid bookId, Guid userId, CancellationToken token = default)
+        public async Task<(float? totalRating, int? userRating)> GetRatingAsync(Guid bookId, Guid userId, CancellationToken token = default)
         {
             using var connection = await _dbConnectionFactory.CreateConnectionAsync(token);
             return await connection.QuerySingleOrDefaultAsync<(float?, int?)>(new CommandDefinition("""
