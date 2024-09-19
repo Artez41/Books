@@ -59,7 +59,8 @@ namespace Books.Api.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateBookRequest request, CancellationToken token)
         {
             var book = request.MapToBook(id);
-            var updatedBook = await _bookService.UpdateAsync(book, token);
+            var userId = HttpContext.GetUserId();
+            var updatedBook = await _bookService.UpdateAsync(book, userId, token);
 
             if (updatedBook is null)
                 return NotFound();
