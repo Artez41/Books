@@ -8,6 +8,8 @@
         public required string Description { get; init; }
         public required int NumberOfPages { get; init; }
         public required int YearOfRelease { get; init; }
+        public float? TotalRating { get; init; }
+        public int? UserRating { get; init; }
         public required IEnumerable<string> Genres { get; init; } = Enumerable.Empty<string>();
     }
 }

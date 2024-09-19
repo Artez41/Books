@@ -9,14 +9,16 @@ namespace Books.Application.Services
     public class BookService : IBookService
     {
         private readonly IBookRepository _bookRepository;
+        private readonly IRatingRepository _ratingRepository;
         private readonly IValidator<Book> _bookValidator;
         private readonly IValidator<GetAllBooksOptions> _booksOptionsValidator;
         private readonly ILoggerAdapter<BookService> _logger;
 
-        public BookService(IBookRepository bookRepository, ILoggerAdapter<BookService> logger, 
+        public BookService(IBookRepository bookRepository, IRatingRepository ratingRepository, ILoggerAdapter<BookService> logger, 
             IValidator<Book> bookValidator, IValidator<GetAllBooksOptions> booksOptionsValidator)
         {
             _bookRepository = bookRepository;
+            _ratingRepository = ratingRepository;
             _bookValidator = bookValidator;
             _booksOptionsValidator = booksOptionsValidator;
             _logger = logger;
@@ -152,7 +154,7 @@ namespace Books.Application.Services
             }
         }
 
-        public async Task<Book?> UpdateAsync(Book book, CancellationToken token = default)
+        public async Task<Book?> UpdateAsync(Book book, Guid? userId = default, CancellationToken token = default)
         {
             _logger.LogInformation("Update book with id: {0}", book.Id);
             var stopWatch = Stopwatch.StartNew();
@@ -171,6 +173,16 @@ namespace Books.Application.Services
                 if (!isUpdated)
                     return null;
 
+                if (!userId.HasValue)
+                {
+                    var rating = await _ratingRepository.GetRatingAsync(book.Id, token);
+                    book.TotalRating = rating;
+                    return book;
+                }
+
+                var ratings = await _ratingRepository.GetRatingAsync(book.Id, userId.Value, token);
+                book.UserRating = ratings.userRating;
+                book.TotalRating = ratings.totalRating;
                 return book;
             }
             catch (Exception ex)

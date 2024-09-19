@@ -8,7 +8,7 @@ namespace Books.Application.Services
         Task<Book?> GetBySlugAsync(string slug, CancellationToken token = default);
         Task<bool> CreateAsync(Book book, CancellationToken token = default);
         Task<bool> DeleteByIdAsync(Guid id, CancellationToken token = default);
-        Task<Book?> UpdateAsync(Book book, CancellationToken token = default);
+        Task<Book?> UpdateAsync(Book book, Guid? userId = default, CancellationToken token = default);
         Task<IEnumerable<Book>> GetAllAsync(GetAllBooksOptions options, CancellationToken token = default);
         Task<int> GetCountAsync(GetAllBooksOptions options, CancellationToken token = default);
     }

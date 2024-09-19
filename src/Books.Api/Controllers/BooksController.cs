@@ -20,7 +20,8 @@ namespace Books.Api.Controllers
         [HttpGet(ApiEndpoints.Books.GetAll)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllBooksRequest request, CancellationToken token)
         {
-            var options = request.MapToOptions();
+            var userId = HttpContext.GetUserId();
+            var options = request.MapToOptions().WithUserId(userId);
 
             var books = await _bookService.GetAllAsync(options, token);
             var booksCount = await _bookService.GetCountAsync(options, token);
@@ -58,7 +59,8 @@ namespace Books.Api.Controllers
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateBookRequest request, CancellationToken token)
         {
             var book = request.MapToBook(id);
-            var updatedBook = await _bookService.UpdateAsync(book, token);
+            var userId = HttpContext.GetUserId();
+            var updatedBook = await _bookService.UpdateAsync(book, userId, token);
 
             if (updatedBook is null)
                 return NotFound();
