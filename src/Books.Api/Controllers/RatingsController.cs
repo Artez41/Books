@@ -1,4 +1,5 @@
-﻿using Books.Api.Auth;
+﻿using Asp.Versioning;
+using Books.Api.Auth;
 using Books.Api.Mapping;
 using Books.Application.Services;
 using Books.Contracts.Requests;
@@ -7,6 +8,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Books.Api.Controllers
 {
+    [ApiController]
+    [ApiVersion(1.0)]
     public class RatingsController : ControllerBase
     {
         private readonly IRatingService _ratingService;
