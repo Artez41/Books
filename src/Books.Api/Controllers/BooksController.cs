@@ -3,6 +3,7 @@ using Books.Api.Auth;
 using Books.Api.Mapping;
 using Books.Application.Services;
 using Books.Contracts.Requests;
+using Books.Contracts.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,6 +21,7 @@ namespace Books.Api.Controllers
         }
 
         [HttpGet(ApiEndpoints.Books.GetAll)]
+        [ProducesResponseType(typeof(BooksResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllBooksRequest request, CancellationToken token)
         {
             var userId = HttpContext.GetUserId();
@@ -34,6 +36,8 @@ namespace Books.Api.Controllers
         }
 
         [HttpGet(ApiEndpoints.Books.Get)]
+        [ProducesResponseType(typeof(BookResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
         {
             var book = Guid.TryParse(idOrSlug, out var id)
@@ -48,6 +52,8 @@ namespace Books.Api.Controllers
 
         [Authorize(AuthConstants.LibrarianPolicyName)]
         [HttpPost(ApiEndpoints.Books.Create)]
+        [ProducesResponseType(typeof(BookResponse), StatusCodes.Status201Created)]
+        [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Create([FromBody] CreateBookRequest request, CancellationToken token)
         {
             var book = request.MapToBook();
@@ -58,6 +64,9 @@ namespace Books.Api.Controllers
 
         [Authorize(AuthConstants.LibrarianPolicyName)]
         [HttpPut(ApiEndpoints.Books.Update)]
+        [ProducesResponseType(typeof(BookResponse), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> Update([FromRoute] Guid id, [FromBody] UpdateBookRequest request, CancellationToken token)
         {
             var book = request.MapToBook(id);
@@ -72,6 +81,8 @@ namespace Books.Api.Controllers
 
         [Authorize(AuthConstants.AdminUserPolicyName)]
         [HttpDelete(ApiEndpoints.Books.Delete)]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Delete([FromRoute] Guid id, CancellationToken token)
         {
             var deleted = await _bookService.DeleteByIdAsync(id, token);
