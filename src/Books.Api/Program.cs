@@ -1,5 +1,6 @@
 using Asp.Versioning;
 using Books.Api.Auth;
+using Books.Api.Health;
 using Books.Api.Swagger;
 using Books.Application;
 using Books.Application.Database;
@@ -55,6 +56,9 @@ builder.Services.AddApiVersioning(x =>
 
 builder.Services.AddControllers();
 
+builder.Services.AddHealthChecks()
+    .AddCheck<DatabaseHealthCheck>(DatabaseHealthCheck.Name);
+
 builder.Services.AddTransient<IConfigureOptions<SwaggerGenOptions>, ConfigureSwaggerOptions>();
 builder.Services.AddSwaggerGen(x => x.OperationFilter<SwaggerDefaultValues>());
 
@@ -76,6 +80,8 @@ if (app.Environment.IsDevelopment())
         }
     });
 }
+
+app.MapHealthChecks("_health");
 
 app.UseHttpsRedirection();
 
