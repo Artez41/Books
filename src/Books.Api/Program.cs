@@ -54,6 +54,18 @@ builder.Services.AddApiVersioning(x =>
     x.ApiVersionReader = new MediaTypeApiVersionReader("api-version");
 }).AddMvc().AddApiExplorer();
 
+builder.Services.AddOutputCache(x =>
+{
+    x.AddBasePolicy(c => c.Cache());
+    x.AddPolicy("BookCache", c =>
+    {
+        c.Cache()
+        .Expire(TimeSpan.FromMinutes(1))
+        .SetVaryByQuery(new[] { "title", "author", "sortBy", "page", "pageSize"})
+        .Tag("books");
+    });
+});
+
 builder.Services.AddControllers();
 
 builder.Services.AddHealthChecks()
@@ -87,6 +99,8 @@ app.UseHttpsRedirection();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseOutputCache();
 
 app.MapControllers();
 
