@@ -6,6 +6,7 @@ using Books.Contracts.Requests;
 using Books.Contracts.Responses;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.OutputCaching;
 
 namespace Books.Api.Controllers
 {
@@ -14,13 +15,16 @@ namespace Books.Api.Controllers
     public class BooksController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly IOutputCacheStore _outputCacheStore;
 
-        public BooksController(IBookService bookService)
+        public BooksController(IBookService bookService, IOutputCacheStore outputCacheStore)
         {
             _bookService = bookService;
+            _outputCacheStore = outputCacheStore;
         }
 
         [HttpGet(ApiEndpoints.Books.GetAll)]
+        [OutputCache(PolicyName = "BookCache")]
         [ProducesResponseType(typeof(BooksResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetAll([FromQuery] GetAllBooksRequest request, CancellationToken token)
         {
@@ -36,6 +40,7 @@ namespace Books.Api.Controllers
         }
 
         [HttpGet(ApiEndpoints.Books.Get)]
+        [OutputCache(PolicyName = "BookCache")]
         [ProducesResponseType(typeof(BookResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public async Task<IActionResult> Get([FromRoute] string idOrSlug, CancellationToken token)
@@ -59,6 +64,8 @@ namespace Books.Api.Controllers
             var book = request.MapToBook();
             await _bookService.CreateAsync(book, token);
 
+            await _outputCacheStore.EvictByTagAsync("books", token);
+
             return CreatedAtAction(nameof(Get), new { idOrSlug =  book.Id }, book);
         }
 
@@ -76,6 +83,8 @@ namespace Books.Api.Controllers
             if (updatedBook is null)
                 return NotFound();
 
+            await _outputCacheStore.EvictByTagAsync("books", token);
+
             return Ok(book.MapToResponse());
         }
 
@@ -89,6 +98,8 @@ namespace Books.Api.Controllers
 
             if (!deleted)
                 return NotFound();
+
+            await _outputCacheStore.EvictByTagAsync("books", token);
 
             return Ok();
         }

@@ -14,7 +14,6 @@ namespace Books.Api.Health
         {
             _dbConnectionFactory = dbConnectionFactory;
             _logger = logger;
-
         }
 
         public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, 
