@@ -36,8 +36,11 @@ builder.Services.AddAuthentication(x =>
 
 builder.Services.AddAuthorization(x =>
 {
-    x.AddPolicy(AuthConstants.AdminUserPolicyName, 
-        p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+    //x.AddPolicy(AuthConstants.AdminUserPolicyName, 
+    //    p => p.RequireClaim(AuthConstants.AdminUserClaimName, "true"));
+
+    x.AddPolicy(AuthConstants.AdminUserPolicyName,
+        p => p.AddRequirements(new AdminAuthRequirement(config["ApiKey"]!)));
 
     x.AddPolicy(AuthConstants.LibrarianPolicyName,
         p => p.RequireAssertion(c =>
@@ -45,6 +48,8 @@ builder.Services.AddAuthorization(x =>
             c.User.HasClaim(m => m is { Type: AuthConstants.LibrarianClaimName, Value: "true" }))
     );
 });
+
+builder.Services.AddScoped<ApiKeyAuthFilter>();
 
 builder.Services.AddApiVersioning(x =>
 {

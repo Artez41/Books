@@ -7,5 +7,7 @@
 
         public const string LibrarianPolicyName = "Librarian";
         public const string LibrarianClaimName = "librarian";
+
+        public const string ApiKeyHeaderName = "x-api-key";
     }
 }

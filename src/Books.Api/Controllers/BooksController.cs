@@ -56,6 +56,7 @@ namespace Books.Api.Controllers
         }
 
         [Authorize(AuthConstants.LibrarianPolicyName)]
+        //[ServiceFilter(typeof(ApiKeyAuthFilter))]
         [HttpPost(ApiEndpoints.Books.Create)]
         [ProducesResponseType(typeof(BookResponse), StatusCodes.Status201Created)]
         [ProducesResponseType(typeof(ValidationFailureResponse), StatusCodes.Status400BadRequest)]
